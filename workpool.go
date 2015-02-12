@@ -3,12 +3,12 @@ package main
 import (
 	"container/list"
 	"errors"
-	"fmt"
+	//"fmt"
 	"sync"
 )
 
 type Worker struct {
-	Id          int
+	Id          string
 	Results     chan int64
 	FreeWorkers chan *Worker
 }
@@ -18,18 +18,18 @@ type WorkerPool struct {
 	//PoolWorker is of type Worker
 	PoolWorker       Worker
 	lk               sync.Mutex
-	totalMaxWorkers  int             //Maximum allowed workers.
-	totalUsedWorkers map[string]Work //Workers which are in use currently.
-	totalFreeWorkers list.List       //Workers available to be picked up.
+	totalMaxWorkers  int               //Maximum allowed workers.
+	totalUsedWorkers map[string]Worker //Workers which are in use currently.
+	totalFreeWorkers list.List         //Workers available to be picked up.
 }
 
-func (wp *WorkerPool) GetWorker() Worker {
+func (wp *WorkerPool) GetWorker() (Worker, error) {
 	// Get a new worker from our pool, create if required.
-	c.lk.Lock()
-	defer c.lk.Unlock()
+	wp.lk.Lock()
+	defer wp.lk.Unlock()
 	// Max workers already reached, so return error.
 	if len(wp.totalUsedWorkers) >= wp.totalMaxWorkers {
-		return "", errors.New("lithosphere:workpool: Max Workers Reached")
+		return Worker{}, errors.New("lithosphere:workpool: Max Workers Reached")
 	} else {
 		//RPOP
 		e := wp.totalFreeWorkers.Back()
@@ -40,11 +40,12 @@ func (wp *WorkerPool) GetWorker() Worker {
 			//Create a new worker.
 			worker := wp.createWorker()
 		}
+		return worker, nil
 	}
-	return nil, worker
 }
 
 func (wp *WorkerPool) createWorker() Worker {
 	// Create a new worker.
-	return &Worker{i, manager.Results, manager.FreeWorkers}
+	id := "workerid"
+	return &Worker{id, manager.Results, manager.FreeWorkers}
 }
