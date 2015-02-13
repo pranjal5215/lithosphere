@@ -1,16 +1,16 @@
-package main
+package lithosphere
 
 import (
 	"container/list"
 	"errors"
 	//"fmt"
 	"sync"
+	"code.google.com/p/go-uuid/uuid"
 )
 
 type Worker struct {
 	Id          string
-	Results     chan int64
-	FreeWorkers chan *Worker
+	Results     chan string
 }
 
 type WorkerPool struct {
@@ -23,7 +23,7 @@ type WorkerPool struct {
 	totalFreeWorkers list.List         //Workers available to be picked up.
 }
 
-func (wp *WorkerPool) GetWorker() (Worker, error) {
+func (wp *WorkerPool) GetWorker(results chan string) (Worker, error) {
 	// Get a new worker from our pool, create if required.
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
@@ -33,19 +33,26 @@ func (wp *WorkerPool) GetWorker() (Worker, error) {
 	} else {
 		//RPOP
 		e := wp.totalFreeWorkers.Back()
+		var worker Worker
 		if e != nil {
-			//FreeWorkers List is empty.
-			worker := wp.totalFreeWorkers.Remove(e)
+			//FreeWorkers List is not empty.
+			wp.totalFreeWorkers.Remove(e)
+			worker = e.Value.(Worker)
 		} else {
 			//Create a new worker.
-			worker := wp.createWorker()
+			worker = wp.createWorker(results)
 		}
 		return worker, nil
 	}
 }
 
-func (wp *WorkerPool) createWorker() Worker {
+func (wp *WorkerPool) createWorker(results chan string) Worker {
 	// Create a new worker.
-	id := "workerid"
-	return &Worker{id, manager.Results, manager.FreeWorkers}
+	id := uuid.New()
+	return Worker{id, results}
+}
+
+func (wp *WorkerPool) ReturnWorker(w Worker) {
+	first := wp.totalFreeWorkers.Front()
+	wp.totalFreeWorkers.InsertBefore(w, first)
 }
