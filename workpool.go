@@ -23,7 +23,7 @@ type WorkerPool struct {
 	totalFreeWorkers list.List         //Workers available to be picked up.
 }
 
-func (wp *WorkerPool) GetWorker(results chan string) (Worker, error) {
+func (wp *WorkerPool) getWorker(results chan string) (Worker, error) {
 	// Get a new worker from our pool, create if required.
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
@@ -42,6 +42,10 @@ func (wp *WorkerPool) GetWorker(results chan string) (Worker, error) {
 			//Create a new worker.
 			worker = wp.createWorker(results)
 		}
+		// Put worker in Used queue.
+		// Manager should always start working
+		// as soon as getWorker returns a worker.
+		wp.totalUsedWorkers[worker.Id] = worker
 		return worker, nil
 	}
 }
@@ -52,11 +56,12 @@ func (wp *WorkerPool) createWorker(results chan string) Worker {
 	return Worker{id, results}
 }
 
-func (wp *WorkerPool) ReturnWorker(w Worker) {
+func (wp *WorkerPool) returnWorker(w Worker) {
 	//Lock access to shared resources.
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
 
 	first := wp.totalFreeWorkers.Front()
 	wp.totalFreeWorkers.InsertBefore(w, first)
+	delete(wp.totalUsedWorkers, w.Id)
 }
