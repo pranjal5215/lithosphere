@@ -14,7 +14,7 @@ type Manager struct {
 var MainManager Manager
 
 func (m Manager) ManageCoreJob(results chan string, f jobFunc) {
-	w, err := m.CorePool.GetWorker()
+	w, err := m.CorePool.getWorker()
 	if err != nil {
 		results <- ""
 		return
@@ -33,7 +33,7 @@ func (m Manager) ManageCoreJob(results chan string, f jobFunc) {
 
 
 func (m Manager) ManageRedisJob(results chan string, f jobFunc) {
-	w, err := m.RedisWorkerPool.GetWorker()
+	w, err := m.RedisWorkerPool.getWorker()
 	if err != nil {
 		return
 	}

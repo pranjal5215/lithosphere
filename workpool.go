@@ -4,8 +4,6 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 	"container/list"
 	"errors"
-	"github.com/vireshas/t-coredb"
-	"github.com/vireshas/t-settings"
 	"sync"
 )
 
@@ -55,7 +53,7 @@ func (w Worker) doJob(results chan string, f jobFunc) {
 	results <- result
 }
 
-func (wp *WorkerPool) createWorker(funcName string, results chan string) Worker {
+func (wp *WorkerPool) createWorker( results chan string) Worker {
 	// Create a new worker.
 	id := uuid.New()
 	return Worker{id}
