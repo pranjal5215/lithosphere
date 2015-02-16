@@ -5,13 +5,13 @@ import (
 )
 
 type Manager struct {
-	CorePool  WorkerPool
+	CorePool WorkerPool
 }
 
 var MainManager Manager
 
 func (m Manager) ManageCoreJob(results chan string, funcName string) {
-	w, err := m.CorePool.GetWorker()
+	w, err := m.CorePool.getWorker()
 	if err != nil {
 		results <- ""
 		return
@@ -23,7 +23,7 @@ func (m Manager) ManageCoreJob(results chan string, funcName string) {
 				fmt.Println("Recovered in f", r)
 			}
 		}()
-		defer m.CorePool.ReturnWorker(w)
+		defer m.CorePool.returnWorker(w)
 		w.doJob(results, funcName)
-	}
+	}()
 }
