@@ -9,7 +9,7 @@ import (
 )
 
 type Worker struct {
-	Id          string
+	Id string
 }
 
 type WorkerPool struct {
@@ -22,7 +22,7 @@ type WorkerPool struct {
 	totalFreeWorkers list.List         //Workers available to be picked up.
 }
 
-func (wp *WorkerPool) GetWorker(results chan string) (Worker, error) {
+func (wp *WorkerPool) GetWorker() (Worker, error) {
 	// Get a new worker from our pool, create if required.
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
@@ -45,7 +45,7 @@ func (wp *WorkerPool) GetWorker(results chan string) (Worker, error) {
 	}
 }
 
-func (w Worker) doJob(results chan string, funcName string){
+func (w Worker) doJob(results chan string, funcName string) {
 	result := funcName()
 	results <- result
 }
@@ -55,7 +55,6 @@ func (wp *WorkerPool) createWorker(funcName string, results chan string) Worker 
 	id := uuid.New()
 	return Worker{id}
 }
-
 
 func (wp *WorkerPool) ReturnWorker(w Worker) {
 	//Lock access to shared resources.
