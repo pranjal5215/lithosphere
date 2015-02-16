@@ -9,8 +9,7 @@ import (
 )
 
 type Worker struct {
-	Id      string
-	Results chan string
+	Id          string
 }
 
 type WorkerPool struct {
@@ -46,11 +45,17 @@ func (wp *WorkerPool) GetWorker(results chan string) (Worker, error) {
 	}
 }
 
-func (wp *WorkerPool) createWorker(results chan string) Worker {
+func (w Worker) doJob(results chan string, funcName string){
+	result := funcName()
+	results <- result
+}
+
+func (wp *WorkerPool) createWorker(funcName string, results chan string) Worker {
 	// Create a new worker.
 	id := uuid.New()
-	return Worker{id, results}
+	return Worker{id}
 }
+
 
 func (wp *WorkerPool) ReturnWorker(w Worker) {
 	//Lock access to shared resources.
