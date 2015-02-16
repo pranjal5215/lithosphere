@@ -9,7 +9,7 @@ var MAXWORKER int = 50
 type jobFunc func(string) string
 
 type Manager struct {
-	CorePool  WorkerPool
+	CorePool        WorkerPool
 	RedisWorkerPool WorkerPool
 }
 
@@ -41,7 +41,6 @@ func (m Manager) ManageCoreJob(results chan string, f jobFunc, inp string) {
 		w.doJob(results, f, inp)
 	}()
 }
-
 
 func (m Manager) ManageRedisJob(results chan string, f jobFunc, inp string) {
 	w, err := m.RedisWorkerPool.getWorker()
