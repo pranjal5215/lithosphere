@@ -4,6 +4,8 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 	"container/list"
 	"errors"
+	"github.com/vireshas/t-coredb"
+	"github.com/vireshas/t-settings"
 	"sync"
 )
 
@@ -48,9 +50,8 @@ func (wp *WorkerPool) getWorker(results chan string) (Worker, error) {
 	}
 }
 
-func (w Worker) doJob(results chan string, funcName string) {
-	//Does actual job calling func
-	result := funcName()
+func (w Worker) doJob(results chan string, f jobFunc) {
+	result := f('a')
 	results <- result
 }
 
