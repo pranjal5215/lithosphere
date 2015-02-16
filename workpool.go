@@ -1,10 +1,9 @@
 package lithosphere
 
 import (
+	"code.google.com/p/go-uuid/uuid"
 	"container/list"
 	"errors"
-	//"fmt"
-	"code.google.com/p/go-uuid/uuid"
 	"sync"
 )
 
@@ -50,6 +49,7 @@ func (wp *WorkerPool) getWorker(results chan string) (Worker, error) {
 }
 
 func (w Worker) doJob(results chan string, funcName string) {
+	//Does actual job calling func
 	result := funcName()
 	results <- result
 }
@@ -61,7 +61,7 @@ func (wp *WorkerPool) createWorker(funcName string, results chan string) Worker 
 }
 
 func (wp *WorkerPool) returnWorker(w Worker) {
-	//Lock access to shared resources.
+	//Return worker from Used map tp Free queue
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
 
