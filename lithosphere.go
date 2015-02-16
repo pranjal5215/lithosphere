@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+var MAXWORKER int = 50
+
 type jobFunc func(string) string
 
 type Manager struct {
@@ -13,10 +15,19 @@ type Manager struct {
 
 var MainManager Manager
 
-func (m Manager) ManageCoreJob(results chan string, f jobFunc) {
+func init() {
+	MainManager.CorePool.totalMaxWorkers = MAXWORKER
+	mp := make(map[string]Worker)
+	MainManager.CorePool.totalUsedWorkers = mp
+}
+
+func (m Manager) ManageCoreJob(results chan string, f jobFunc, inp string) {
 	w, err := m.CorePool.getWorker()
 	if err != nil {
-		results <- ""
+		fmt.Println(err)
+		go func() {
+			results <- "err"
+		}()
 		return
 	}
 
@@ -27,12 +38,12 @@ func (m Manager) ManageCoreJob(results chan string, f jobFunc) {
 			}
 		}()
 		defer m.CorePool.returnWorker(w)
-		w.doJob(results, f)
+		w.doJob(results, f, inp)
 	}()
 }
 
 
-func (m Manager) ManageRedisJob(results chan string, f jobFunc) {
+func (m Manager) ManageRedisJob(results chan string, f jobFunc, inp string) {
 	w, err := m.RedisWorkerPool.getWorker()
 	if err != nil {
 		return
@@ -45,6 +56,6 @@ func (m Manager) ManageRedisJob(results chan string, f jobFunc) {
 			}
 		}()
 		defer m.CorePool.returnWorker(w)
-		w.doJob(results, f)
+		w.doJob(results, f, inp)
 	}()
 }

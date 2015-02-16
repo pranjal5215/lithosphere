@@ -5,6 +5,7 @@ import (
 	"container/list"
 	"errors"
 	"sync"
+	"fmt"
 )
 
 type Worker struct {
@@ -48,8 +49,8 @@ func (wp *WorkerPool) getWorker() (Worker, error) {
 	}
 }
 
-func (w Worker) doJob(results chan string, f jobFunc) {
-	result := f("a")
+func (w Worker) doJob(results chan string, f jobFunc, inp string) {
+	result := f(inp)
 	results <- result
 }
 
@@ -64,7 +65,7 @@ func (wp *WorkerPool) returnWorker(w Worker) {
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
 
-	first := wp.totalFreeWorkers.Front()
-	wp.totalFreeWorkers.InsertBefore(w, first)
+	wp.totalFreeWorkers.PushFront(w)
 	delete(wp.totalUsedWorkers, w.Id)
+
 }
