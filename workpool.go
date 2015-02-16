@@ -38,7 +38,7 @@ func (wp *WorkerPool) getWorker() (Worker, error) {
 			worker = e.Value.(Worker)
 		} else {
 			//Create a new worker.
-			worker = wp.createWorker(results)
+			worker = wp.createWorker()
 		}
 		// Put worker in Used queue.
 		// Manager should always start working
@@ -53,7 +53,7 @@ func (w Worker) doJob(results chan string, f jobFunc) {
 	results <- result
 }
 
-func (wp *WorkerPool) createWorker( results chan string) Worker {
+func (wp *WorkerPool) createWorker() Worker {
 	// Create a new worker.
 	id := uuid.New()
 	return Worker{id}
