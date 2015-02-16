@@ -4,13 +4,13 @@ import (
 	"container/list"
 	"errors"
 	//"fmt"
-	"sync"
 	"code.google.com/p/go-uuid/uuid"
+	"sync"
 )
 
 type Worker struct {
-	Id          string
-	Results     chan string
+	Id      string
+	Results chan string
 }
 
 type WorkerPool struct {
@@ -53,6 +53,10 @@ func (wp *WorkerPool) createWorker(results chan string) Worker {
 }
 
 func (wp *WorkerPool) ReturnWorker(w Worker) {
+	//Lock access to shared resources.
+	wp.lk.Lock()
+	defer wp.lk.Unlock()
+
 	first := wp.totalFreeWorkers.Front()
 	wp.totalFreeWorkers.InsertBefore(w, first)
 }
