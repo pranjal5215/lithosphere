@@ -21,7 +21,7 @@ type WorkerPool struct {
 	totalFreeWorkers list.List         //Workers available to be picked up.
 }
 
-func (wp *WorkerPool) getWorker(results chan string) (Worker, error) {
+func (wp *WorkerPool) getWorker() (Worker, error) {
 	// Get a new worker from our pool, create if required.
 	wp.lk.Lock()
 	defer wp.lk.Unlock()
@@ -49,7 +49,7 @@ func (wp *WorkerPool) getWorker(results chan string) (Worker, error) {
 }
 
 func (w Worker) doJob(results chan string, f jobFunc) {
-	result := f('a')
+	result := f("a")
 	results <- result
 }
 
