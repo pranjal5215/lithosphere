@@ -46,5 +46,5 @@ func (m Manager) ManageRedisJob(results chan string, f jobFunc) {
 		}()
 		defer m.CorePool.returnWorker(w)
 		w.doJob(results, f)
-	}
+	}()
 }
