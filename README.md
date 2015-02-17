@@ -39,9 +39,9 @@ func main() {
 
 }
 
-func hello(na string) string {
+func hello(msg string) string {
 
-	fmt.Println("HEllo ", na)
+	fmt.Println("HEllo ", msg)
 	i := time.Duration(rand.Int31n(10000))
 	fmt.Println(i)
 	time.Sleep(i * time.Millisecond)
