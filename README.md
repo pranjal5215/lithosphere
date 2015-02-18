@@ -29,13 +29,15 @@ import (
 
 func main() {
 	results := make(chan string)
-	for i := 1; i < 3; i++ {
+	numworkers := 3
+	for i := 0; i < numworkers; i++ {
 		lithosphere.MainManager.ManageCoreJob(results, hello, strconv.Itoa(i))
 	}
-	v := <-results
-	fmt.Println(v)
-	v = <-results
-	fmt.Println(v)
+	
+	for i := 0; i < numworkers; i++ {
+		v := <-results
+		fmt.Println(v)
+	}
 
 }
 
