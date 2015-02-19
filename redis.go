@@ -1,6 +1,7 @@
 package lithosphere
 
 import (
+	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/goibibo/t-settings"
@@ -11,10 +12,10 @@ type RedisPool struct {
 	*redis.Pool
 }
 
-var PoolMap map[string]*RedisPool
+var redisPoolMap map[string]*RedisPool
 
 func init() {
-	PoolMap = make(map[string]*RedisPool)
+	redisPoolMap = make(map[string]*RedisPool)
 }
 
 func newPool(server, password string) *RedisPool {
@@ -41,19 +42,27 @@ func newPool(server, password string) *RedisPool {
 }
 
 func GetPool(vertical string) *RedisPool {
-	if pool, ok := PoolMap[vertical]; ok {
+	if pool, ok := redisPoolMap[vertical]; ok {
 		return pool
 	} else {
 		configs := settings.GetConfigsFor("redis", vertical)
 		connectionString := settings.ConstructRedisPath(configs)
-		PoolMap[vertical] = newPool(connectionString, "")
-		return PoolMap[vertical]
+		redisPoolMap[vertical] = newPool(connectionString, "")
+		return redisPoolMap[vertical]
+	}
+}
+
+func GetVerticalActiveConnections(ver string) (result int, err error) {
+	if pool, ok := redisPoolMap[ver]; ok {
+		return pool.ActiveCount(), nil
+	} else {
+		return 0, errors.New("Vertical not found in pool")
 	}
 }
 
 func GetAllActiveConnections() string {
 	var msg string
-	for ver, pool := range PoolMap {
+	for ver, pool := range redisPoolMap {
 		msg += fmt.Sprintln("Vertical", ver, " : ", pool.ActiveCount())
 	}
 	return msg
