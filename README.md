@@ -52,3 +52,39 @@ func hello(msg string) string {
 }
 
 ```
+
+
+Testing Memecache
+```
+package main
+
+import (
+	"fmt"
+	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/goibibo/lithosphere"
+	"github.com/goibibo/t-settings"
+)
+
+func main() {
+	dir := "dev"
+	path := fmt.Sprintf("thor/src/settings/%s/config.json", dir)
+	settings.Configure(path)
+
+	pl := lithosphere.GetMemCachePool("flight")
+
+	for i := 0; i <= 120; i++ {
+		c, _ := pl.Get()
+		fmt.Println("just got", c)
+		c.Set(&memcache.Item{Key: "foo", Value: []byte("my value")})
+		it := c.Get("foo")
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println(it)
+		fmt.Println("returning ", c)
+		pl.Return(c)
+	}
+}
+```

@@ -2,7 +2,6 @@ package lithosphere
 
 import (
 	"database/sql"
-	"errors"
 	log "github.com/Sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/goibibo/gopool"
@@ -55,17 +54,13 @@ func GetMySqlPool(vertical string) MySqlPool {
 	}
 }
 
-func (m MySqlPool) Get() (sql.DB, error) {
-	var db sql.DB
-	var ok bool
+func (m MySqlPool) Get() sql.DB {
 	d := m.Acquire()
-	db, ok = d.(sql.DB)
-	if ok {
-		return db, nil
-	}
-	return db, errors.New("db loading failed")
+	dbPtr := (d).(*sql.DB)
+	db := *dbPtr
+	return db
 }
 
 func (m MySqlPool) Return(db sql.DB) {
-	m.Release(db)
+	m.Release(&db)
 }
