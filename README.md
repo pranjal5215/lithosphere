@@ -88,3 +88,34 @@ func main() {
 	}
 }
 ```
+
+Mysql Example
+```
+package main
+
+import (
+        "github.com/goibibo/lithosphere"
+        "fmt"
+        "github.com/goibibo/t-settings"
+
+)
+
+func main() {
+        dir := "dev"
+        path := fmt.Sprintf("thor/src/settings/%s/config.json", dir)
+        settings.Configure(path)
+
+        pl := lithosphere.GetMySqlPool("flight")
+
+        for i := 0; i <= 120; i++ {
+                c := pl.Get()
+                fmt.Println("just got", c)
+
+                t, _ := c.Exec("show tables")
+                fmt.Println(t)
+
+                fmt.Println("returning ", c)
+                pl.Return(c)
+        }
+}
+```
