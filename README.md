@@ -15,7 +15,6 @@ AND
 
 
 Handle multiple workers for concurrency management.
-
 ```
 package main
 
