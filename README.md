@@ -15,4 +15,39 @@ AND
 
 
 Handle multiple workers for concurrency management.
+```
+package main
 
+import (
+	"fmt"
+	"lithosphere"
+	"math/rand"
+	"strconv"
+	"time"
+)
+
+func main() {
+	results := make(chan string)
+	numworkers := 3
+	for i := 0; i < numworkers; i++ {
+		lithosphere.MainManager.ManageCoreJob(results, hello, strconv.Itoa(i))
+	}
+	
+	for i := 0; i < numworkers; i++ {
+		v := <-results
+		fmt.Println(v)
+	}
+
+}
+
+func hello(msg string) string {
+
+	fmt.Println("HEllo ", msg)
+	i := time.Duration(rand.Int31n(10000))
+	fmt.Println(i)
+	time.Sleep(i * time.Millisecond)
+
+	return "Success"
+}
+
+```
