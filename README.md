@@ -1,17 +1,30 @@
 # lithosphere
 Uppermost layer for Apps to interact with any external interface
 
-Implement a worker pool which everybody connects to to get a worker to do a job.
-Implments function closure to be called in for concurrency/API/DB workers.
-First implementation only to be for one among concurrency/API/DB
+Implement a concurrency  worker pool which everybody connects to get a worker to do a job.
+Implments function closure to be called in for concurrency workers.
+First implementation only to be for one among concurrency
 
-TODO:Handle multiple workers so that all can be monitored when they access common connection pool
+Lithosphere  handles concurrency part and merging to be followed in next iteration.
+
+
+Inspiration for lithosphere has been derived from
+
+[golang blog.](http://blog.golang.org/concurrency-is-not-parallelism)
+[github.](https://github.com/Jeffail/tunny)
+
+and from discussions like 
+[stackoverfllow.](http://stackoverflow.com/questions/23837368/idiomatic-variable-size-worker-pool-in-go)
+[gobyexample.](https://gobyexample.com/worker-pools)
+
+
+Functionality for Datastore connection pools and their monitoring has been moved to mantle.
+Handle multiple workers so that all can be monitored when they access common connection pool:
 1) Redis
 2) Cassandra
 3) MySQL
 4) Memcache
 
-AND
 
 
 Handle multiple workers for concurrency management.

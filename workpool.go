@@ -11,6 +11,7 @@ type Worker struct {
 	Id string
 }
 
+// TODO: Evaluate our pool with minimal_vitess_pool for performance and aintenance.
 type WorkerPool struct {
 	//Singleton object on worker pool to be created which will be shared by all.
 	//PoolWorker is of type Worker
@@ -66,5 +67,4 @@ func (wp *WorkerPool) returnWorker(w Worker) {
 
 	wp.totalFreeWorkers.PushFront(w)
 	delete(wp.totalUsedWorkers, w.Id)
-
 }
