@@ -49,8 +49,8 @@ func (wp *WorkerPool) getWorker() (Worker, error) {
 	}
 }
 
-func (w Worker) doJob(results chan string, f jobFunc, inp string) {
-	result := f(inp)
+func (w Worker) doJob(results chan string, f jobFunc, inp ...interface{}) {
+	result := f(inp...)
 	results <- result
 }
 
