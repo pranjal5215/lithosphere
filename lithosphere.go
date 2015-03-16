@@ -48,3 +48,8 @@ func (m Manager) ManageCoreJob(results chan string, f jobFunc, inp ...interface{
 		w.doJob(results, f, inp...)
 	}()
 }
+
+func (m Manager) ActiveCount() int {
+	count := len(m.CorePool.totalUsedWorkers)
+	return count
+}
