@@ -6,7 +6,7 @@ import (
 
 var MAXWORKER int = 100000
 
-type jobFunc func(string) string
+type jobFunc func(...interface{}) string
 
 type Manager struct {
 	CorePool        WorkerPool
@@ -21,7 +21,7 @@ func init() {
 	MainManager.CorePool.totalUsedWorkers = mp
 }
 
-func (m Manager) ManageCoreJob(results chan string, f jobFunc, inp string) {
+func (m Manager) ManageCoreJob(results chan string, f jobFunc, inp ...interface{}) {
 	// ManageCoreJob is a manager to perform workers action through worker pool
 	// Get a Worker
 	w, err := m.CorePool.getWorker()
@@ -45,6 +45,11 @@ func (m Manager) ManageCoreJob(results chan string, f jobFunc, inp string) {
 		// Upon completion return worker to pool after work is done.
 		defer m.CorePool.returnWorker(w)
 		// Do work.
-		w.doJob(results, f, inp)
+		w.doJob(results, f, inp...)
 	}()
+}
+
+func (m Manager) ActiveCount() int {
+	count := len(m.CorePool.totalUsedWorkers)
+	return count
 }
